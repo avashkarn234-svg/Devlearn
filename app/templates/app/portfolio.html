@@ -1,0 +1,95 @@
+{% extends 'app/base.html' %}
+{% block title %}{{ portfolio_user.username }}'s Portfolio - DevLearn{% endblock %}
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2>🎓 {{ portfolio_user.username }}'s Portfolio</h2>
+        <p class="text-muted">{{ profile.headline }}</p>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-primary">{{ completed_lessons.count }}</h3>
+                <p class="text-muted mb-0">Lessons Completed</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-success">{{ courses_completed|length }}</h3>
+                <p class="text-muted mb-0">Courses Finished</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-info">{{ profile.get_tier_display }}</h3>
+                <p class="text-muted mb-0">Current Tier</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-warning">📍</h3>
+                <p class="text-muted mb-0">{{ profile.location }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if profile.bio %}
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5>About</h5>
+            <p>{{ profile.bio }}</p>
+            {% if profile.tech_stack %}
+                <strong>Tech Stack:</strong> {{ profile.tech_stack }}
+            {% endif %}
+        </div>
+    </div>
+{% endif %}
+
+{% if courses_completed %}
+    <div class="card mb-4">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0">🏆 Completed Courses</h5>
+        </div>
+        <div class="list-group list-group-flush">
+            {% for course in courses_completed %}
+                <div class="list-group-item">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h6 class="mb-0">{{ course.title }}</h6>
+                        <span class="badge bg-success">✓ Completed</span>
+                    </div>
+                    <small class="text-muted">Level {{ course.level }}</small>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}
+
+{% if completed_lessons %}
+    <div class="card">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">📚 Recent Lessons</h5>
+        </div>
+        <div class="list-group list-group-flush">
+            {% for progress in completed_lessons|slice:":10" %}
+                <div class="list-group-item">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h6 class="mb-0">{{ progress.lesson.title }}</h6>
+                        <small class="text-muted">{{ progress.completed_at|date:"M d, Y" }}</small>
+                    </div>
+                    <small class="text-muted">{{ progress.lesson.course.title }}</small>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}
+{% endblock %}

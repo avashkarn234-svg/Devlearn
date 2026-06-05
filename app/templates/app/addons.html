@@ -1,0 +1,35 @@
+{% extends 'app/base.html' %}
+{% block title %}Add-ons - DevLearn{% endblock %}
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2>🎁 Add-ons & Extras</h2>
+        <p class="text-muted">Enhance your learning experience</p>
+    </div>
+</div>
+
+{% if addons %}
+    <div class="row g-4">
+        {% for addon in addons %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ addon.name }}</h5>
+                        <p class="card-text text-muted">{{ addon.description }}</p>
+                        <h4 class="text-primary">Rs. {{ addon.price }}</h4>
+                        {% if addon.id in user_addon_ids %}
+                            <button class="btn btn-success w-100" disabled>✓ Purchased</button>
+                        {% else %}
+                            <button class="btn btn-primary w-100">🛒 Buy Now</button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="alert alert-info text-center py-5">
+        <h5>🛍️ No add-ons available yet</h5>
+    </div>
+{% endif %}
+{% endblock %}

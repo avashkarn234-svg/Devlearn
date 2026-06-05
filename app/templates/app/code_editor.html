@@ -1,0 +1,94 @@
+{% extends 'app/base.html' %}
+{% block title %}Code Editor - DevLearn{% endblock %}
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2>💻 Code Editor</h2>
+        <p class="text-muted">{{ lesson.title }} - {{ lesson.course.title }}</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white d-flex justify-content-between">
+                <h5 class="mb-0">{{ submission.get_language_display }}</h5>
+                <button class="btn btn-sm btn-light" onclick="runCode()">▶ Run Code</button>
+            </div>
+            <div class="card-body p-0">
+                <textarea id="codeEditor" class="form-control" style="font-family: monospace; min-height: 400px; border: none;">{{ submission.code }}</textarea>
+            </div>
+            <div class="card-footer">
+                <form method="POST" style="display: inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="code" id="codeInput">
+                    <button type="submit" class="btn btn-success">💾 Save Code</button>
+                </form>
+                <a href="{% url 'pset_submit' lesson.id %}" class="btn btn-secondary">← Back</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-secondary text-white">
+                <h6 class="mb-0">📤 Output</h6>
+            </div>
+            <div class="card-body" style="min-height: 400px; background: #1e1e1e; color: #00ff00; font-family: monospace; overflow-y: auto;">
+                <div id="output">{{ submission.output }}</div>
+            </div>
+        </div>
+
+        {% if submission.status == 'ERROR' %}
+            <div class="alert alert-danger mt-3">
+                <strong>Error:</strong>
+                <pre>{{ submission.output }}</pre>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+const editor = document.getElementById('codeEditor');
+const codeInput = document.getElementById('codeInput');
+const output = document.getElementById('output');
+
+function saveCode() {
+    codeInput.value = editor.value;
+}
+
+function runCode() {
+    saveCode();
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    
+    fetch('{% url "execute_code" %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
+        },
+        body: JSON.stringify({
+            submission_id: {{ submission.id }},
+            code: editor.value
+        })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.status === 'success') {
+            output.textContent = data.output || '(No output)';
+        } else {
+            output.textContent = data.error || 'Error executing code';
+        }
+    })
+    .catch(e => output.textContent = 'Error: ' + e.message);
+}
+
+// Save on Ctrl+S
+document.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        saveCode();
+    }
+});
+</script>
+{% endblock %}

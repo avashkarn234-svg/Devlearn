@@ -1,0 +1,64 @@
+{% extends 'app/base.html' %}
+{% block title %}{{ lesson.title }} - DevLearn{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0">{{ lesson.title }}</h3>
+                <small>{{ course.title }} › Level {{ course.level }}</small>
+            </div>
+            <div class="card-body">
+                {% if lesson.video_url %}
+                    <div class="mb-4">
+                        <h6>📹 Video Lesson</h6>
+                        <iframe width="100%" height="400" src="{{ lesson.video_url }}" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                {% endif %}
+
+                <div class="lesson-content mb-4">
+                    <h6>📖 Content</h6>
+                    {{ lesson.content|linebreaks }}
+                </div>
+
+                {% if lesson.code_example %}
+                    <div class="mb-4">
+                        <h6>💻 Code Example</h6>
+                        <pre class="bg-dark text-light p-3 rounded"><code>{{ lesson.code_example }}</code></pre>
+                    </div>
+                {% endif %}
+
+                {% if not is_completed %}
+                    <form method="POST" action="{% url 'mark_lesson_complete' lesson.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success btn-lg me-2">✓ Mark as Complete</button>
+                    </form>
+                    <a href="{% url 'pset_submit' lesson.id %}" class="btn btn-info btn-lg">📝 Submit Code</a>
+                {% else %}
+                    <div class="alert alert-success">
+                        <strong>✓ Completed!</strong> You've finished this lesson.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header bg-secondary text-white">
+                <h6 class="mb-0">📚 Course Outline</h6>
+            </div>
+            <div class="list-group list-group-flush">
+                {% for l in lessons %}
+                    <a href="{% url 'lesson_detail' course.id l.id %}" 
+                       class="list-group-item list-group-item-action {% if l.id == lesson.id %}active{% endif %}">
+                        <div class="d-flex w-100 align-items-center">
+                            <span class="flex-grow-1">{{ l.order }}. {{ l.title }}</span>
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

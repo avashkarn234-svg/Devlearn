@@ -1,0 +1,90 @@
+{% extends 'app/base.html' %}
+{% block title %}Upgrade - DevLearn{% endblock %}
+{% block content %}
+<div class="row mt-4">
+    <div class="col-lg-8 mx-auto">
+        <h2 class="mb-4">💳 Upgrade Your Account</h2>
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5>📦 1 Month</h5>
+                        <h3 class="text-primary my-3">Rs. 299</h3>
+                        <ul class="list-unstyled mb-3">
+                            <li>✓ All Level 1-2 courses</li>
+                            <li>✓ Code submissions</li>
+                            <li>✓ Priority support</li>
+                        </ul>
+                        <button class="btn btn-primary" onclick="selectPlan('PAID_MONTH', '1 Month')">Select</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card border-primary">
+                    <div class="card-body text-center">
+                        <h5>👑 1 Year</h5>
+                        <h3 class="text-primary my-3">Rs. 2,990</h3>
+                        <ul class="list-unstyled mb-3">
+                            <li>✓ All courses Level 1-4</li>
+                            <li>✓ Framework projects</li>
+                            <li>✓ VIP support</li>
+                            <li class="text-success fw-bold">⭐ 2 months free!</li>
+                        </ul>
+                        <button class="btn btn-primary" onclick="selectPlan('PAID_YEAR', '1 Year')">Select</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="paymentForm" style="display: none;" class="card">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0">📱 Scan & Pay</h5>
+            </div>
+            <div class="card-body text-center py-5">
+                <div class="mb-4 p-4 bg-light rounded">
+                    <div style="width: 250px; height: 250px; margin: 0 auto; background: linear-gradient(45deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; border-radius: 10px; color: white; font-weight: bold;">
+                        📲 QR Code
+                    </div>
+                </div>
+
+                <form method="POST" class="mt-4">
+                    {% csrf_token %}
+                    <input type="hidden" id="tierInput" name="tier">
+                    <input type="hidden" id="durationInput" name="duration">
+
+                    <div class="mb-3">
+                        <label class="form-label">Transaction ID</label>
+                        <input type="text" name="transaction_id" class="form-control" placeholder="Ref. No. from screenshot" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Screenshot URL</label>
+                        <input type="url" name="screenshot_url" class="form-control" placeholder="imgur.com/..." required>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success btn-lg">Submit Payment</button>
+                        <button type="button" class="btn btn-secondary" onclick="resetForm()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function selectPlan(tier, duration) {
+    document.getElementById('tierInput').value = tier;
+    document.getElementById('durationInput').value = duration;
+    document.getElementById('paymentForm').style.display = 'block';
+    document.getElementById('paymentForm').scrollIntoView({ behavior: 'smooth' });
+}
+
+function resetForm() {
+    document.getElementById('paymentForm').style.display = 'none';
+    document.getElementById('tierInput').value = '';
+    document.getElementById('durationInput').value = '';
+}
+</script>
+{% endblock %}

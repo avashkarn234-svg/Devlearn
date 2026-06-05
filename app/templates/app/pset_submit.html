@@ -1,0 +1,67 @@
+{% extends 'app/base.html' %}
+{% block title %}Submit Code - DevLearn{% endblock %}
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2>📝 Submit Code for {{ lesson.title }}</h2>
+        <p class="text-muted">{{ course.title }}</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Write Your Code</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Language</label>
+                        <select name="language" class="form-select" required>
+                            <option value="">Select Language</option>
+                            <option value="python">Python</option>
+                            <option value="javascript">JavaScript</option>
+                            <option value="c">C</option>
+                            <option value="lua">Lua</option>
+                            <option value="bash">Bash</option>
+                            <option value="html">HTML</option>
+                            <option value="css">CSS</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Code</label>
+                        <textarea name="code" class="form-control" rows="10" placeholder="Write your code here..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Start Coding →</button>
+                    <a href="{% url 'lesson_detail' course.id lesson.id %}" class="btn btn-secondary">← Back</a>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-secondary text-white">
+                <h6 class="mb-0">📚 Your Submissions</h6>
+            </div>
+            <div class="list-group list-group-flush">
+                {% for sub in submissions %}
+                    <a href="{% url 'code_editor' sub.id %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <strong>{{ sub.language }}</strong>
+                            <span class="badge {% if sub.status == 'SUCCESS' %}bg-success{% elif sub.status == 'ERROR' %}bg-danger{% else %}bg-warning{% endif %}">{{ sub.status }}</span>
+                        </div>
+                        <small class="text-muted">{{ sub.submitted_at|date:"M d, H:i" }}</small>
+                    </a>
+                {% empty %}
+                    <div class="list-group-item text-muted text-center py-3">
+                        No submissions yet
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

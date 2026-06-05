@@ -1,0 +1,38 @@
+{% extends 'app/base.html' %}
+{% block title %}Login - DevLearn{% endblock %}
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-header bg-primary text-white text-center fw-bold py-3">
+                <h4 class="mb-0">Welcome Back</h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" novalidate>
+                    {% csrf_token %}
+                    {% for field in form %}
+                        <div class="mb-3">
+                            <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.errors %}
+                                <div class="invalid-feedback" style="display: block;">
+                                    {% for error in field.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-primary w-100 fw-bold py-2">Sign In</button>
+                </form>
+                <hr class="my-4">
+                <p class="text-center text-muted mb-0">
+                    Don't have an account? <a href="{% url 'register' %}" class="text-primary fw-bold">Register here</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    .form-control { border-radius: 0.5rem; }
+    .form-control:focus { border-color: #667eea; box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25); }
+</style>
+{% endblock %}
