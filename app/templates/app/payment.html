@@ -41,11 +41,7 @@
             <div class="card-header bg-warning text-dark">
                 <h5 class="mb-0">📱 Scan & Pay</h5>
             </div>
-            <div class="card-body text-center py-5">
-                <div class="mb-4 p-4 bg-light rounded">
-                    <div style="width: 250px; height: 250px; margin: 0 auto; background: linear-gradient(45deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; border-radius: 10px; color: white; font-weight: bold;">
-                        📲 QR Code
-                    </div>
+            <img src="qr.jpg" alt="Payment QR" style="max-width: 300px;">
                 </div>
 
                 <form method="POST" class="mt-4">
@@ -59,8 +55,8 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Screenshot URL</label>
-                        <input type="url" name="screenshot_url" class="form-control" placeholder="imgur.com/..." required>
+    <label class="form-label">Payment Screenshot</label>
+    <input type="file" name="screenshot" class="form-control" accept="image/*" required>
                     </div>
 
                     <div class="d-grid gap-2">

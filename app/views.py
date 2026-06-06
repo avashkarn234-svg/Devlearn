@@ -253,7 +253,18 @@ def payment_page(request):
                 tier=tier,
                 duration=duration,
                 transaction_id=transaction_id,
-                screenshot_url=screenshot_url,
+                screenshot_file = request.FILES.get('screenshot')
+
+if screenshot_file:
+    # Upload to Supabase Storage
+    file_path = f"payments/{request.user.id}/{screenshot_file.name}"
+    supabase.storage.from_('payments').upload(
+        file_path,
+        screenshot_file.read()
+    )
+    
+    # Get public URL
+    screenshot_url = supabase.storage.from_('payments').get_public_url(file_path)
             )
             messages.success(request, 'Payment submitted! Awaiting approval.')
             return redirect('payment_pending')
