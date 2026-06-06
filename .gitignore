@@ -37,3 +37,4 @@ staticfiles/
 .DS_Store
 
 media/
+app/migrations/
