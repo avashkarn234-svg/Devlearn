@@ -3,15 +3,14 @@ import os
 import dj_database_url
 from decouple import config
 
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config('SECRET_KEY', default='dev-secret-key-change-in-production')
 
-DEBUG = True
-
+DEBUG = config('DEBUG', cast=bool)
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1,localhost,devlearn.choreo.dev').split(',')
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -92,3 +91,7 @@ SESSION_COOKIE_SAMESITE = 'Lax'
 
 PAID_MONTH_PRICE = 299
 PAID_YEAR_PRICE = 2990
+
+SUPABASE_URL = config('SUPABASE_URL')
+SUPABASE_KEY = config('SUPABASE_KEY')
+SUPABASE_SECRET_KEY = config('SUPABASE_SECRET_KEY')

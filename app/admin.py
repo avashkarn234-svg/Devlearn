@@ -2,6 +2,15 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.utils import timezone
 from .models import Profile, Course, Lesson, StudentProgress, Submission, CodeExecution, PaymentVerification, Addon, UserAddon
+from supabase import create_client, Client
+from django.conf import settings
+from datetime import timedelta
+
+# Use SECRET KEY for deletions (backend only)
+supabase = create_client(
+    settings.SUPABASE_URL,
+    settings.SUPABASE_SECRET_KEY
+)
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
@@ -68,24 +77,29 @@ class PaymentVerificationAdmin(admin.ModelAdmin):
     def approve_payment(self, request, queryset):
         updated = 0
         for payment in queryset.filter(status='PENDING'):
+            # Delete screenshot from Supabase Storage FIRST
+            try:
+                file_path = payment.screenshot_url.split('/payments/')[-1]
+                supabase.storage.from_('payments').remove([file_path])
+            except Exception as e:
+                self.message_user(request, f'Warning: Could not delete file: {str(e)}', level='WARNING')
+            
+            # THEN approve payment
             payment.status = 'APPROVED'
             payment.approved_at = timezone.now()
+            
             if payment.duration == '1 Month':
                 payment.user.profile.tier = payment.tier
                 payment.user.profile.tier_expires_at = timezone.now() + timedelta(days=30)
             elif payment.duration == '1 Year':
                 payment.user.profile.tier = payment.tier
                 payment.user.profile.tier_expires_at = timezone.now() + timedelta(days=365)
+            
             payment.user.profile.save()
             payment.save()
             updated += 1
-        self.message_user(request, f'{updated} payment(s) approved.')
-
-@admin.register(Addon)
-class AddonAdmin(admin.ModelAdmin):
-    list_display = ('name', 'price', 'permanent')
-    list_filter = ('permanent',)
-    search_fields = ('name',)
+        
+        self.message_user(request, f'{updated} payment(s) approved. Screenshots deleted.')
 
 @admin.register(UserAddon)
 class UserAddonAdmin(admin.ModelAdmin):
